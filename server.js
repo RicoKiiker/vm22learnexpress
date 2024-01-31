@@ -3,6 +3,10 @@ const nunjucks = require('nunjucks')
 const app = express();
 const port = 3000;
 
+app.use(express.urlencoded({
+  extended:true
+}));
+
 nunjucks.configure('views', {
     autoescape: true,
     express: app
@@ -19,6 +23,18 @@ app.get('/page2', (req, res) => {
   app.get('/form', (req, res) => {
     console.log(req.query);
     res.render('form.njk', req.query);
+  });
+
+  app.get('/circle', (req, res) => {
+    console.log(req.query);
+    res.render('circle.njk', req.query);
+  });
+
+  app.post('/circle', (req, res) => {
+    let area = Math.PI * req.body.radius * req.body.radius;
+    let diameter = 2 * Math.PI * req.body.radius;
+    let volume = 4/3 * Math.PI * req.body.radius * req.body.radius * req.body.radius;
+    res.render("circleAnswer.njk" , {r: req.body.radius, a: area, d: diameter, v: volume });
   });
 
 
