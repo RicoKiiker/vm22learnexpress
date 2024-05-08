@@ -1,9 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const fs = require('fs');
-const {Sequelize, QueryTypes, DataTypes} = require('sequelize');
-
-const{Movie, User}= require('../models/index.js');
+const {Movie, User} = require('../models/index.js');
 
 router.use((req, res, next) => {
     if(req.session.user){
@@ -13,7 +10,7 @@ router.use((req, res, next) => {
     }
 });
 
-router.get('/', async (req, res) =>{
+router.get('/', async (req, res) => {
     let movies = await Movie.findAll({
         include: User
     });
@@ -24,30 +21,29 @@ router.get('/add', (req, res) => {
     res.render('movies/add.njk');
 });
 
-router.post('/add', async(req, res) => {
+router.post('/add', async (req, res) => {
     await Movie.create({
         name:req.body.movie,
         year: req.body.year,
-        description: req.body.description,    
-        user_id: req.session.user.id                   
+        description: req.body.description,
+        user_id: req.session.user.id
     });
     res.redirect('/movies/');
 });
 
-router.get('/view',async (req, res) => {
-    let id = parseInt (req.query.id);
-    let movie = Movie.findOne({
+router.get('/view', async (req, res) => {
+    let movie = await Movie.findOne({
         where: {
-            id:req.query.id
+            id: req.query.id
         }
     });
     res.render('movies/view.njk', {movie: movie});
 });
 
-router.get('/edit/:id', async (req, res) => {
+router.get('/edit/:id',async (req, res) => {
     let movie = await Movie.findOne({
         where: {
-            id:req.params.id
+            id: req.params.id
         }
     });
     res.render('movies/edit.njk', {movie: movie});
@@ -57,22 +53,22 @@ router.post('/edit/:id', async (req, res) => {
     await Movie.update({
         name:req.body.movie,
         year: req.body.year,
-        description: req.body.desctription                        
+        description: req.body.description
     },{
         where: {
-            id:req.params.id
+            id: req.params.id
         }
     });
-    
     res.redirect('/movies/');
 });
 
-router.get('/delete/:id', async (req, res) => {
+router.get('/delete/:id',async (req, res) => {
     await Movie.destroy({
         where: {
-            id:req.params.id
+            id: req.params.id
         }
     });
     res.redirect('/movies/');
 });
+
 module.exports = router;

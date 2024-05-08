@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const{User}= require('../models/index.js');
+const {User} = require('../models/index.js');
 
 router.get('/register', async (req, res) => {
     res.render('auth/register.njk')
@@ -15,7 +15,7 @@ router.post('/register', async (req, res) => {
     });
     let errors = [];
     if (req.body.password !== req.body.password_confirm) {
-        error.push("passwords don't match");
+        errors.push("passwords don't match");
     }
     if (user) {
         errors.push("There is user with this email");
@@ -27,13 +27,13 @@ router.post('/register', async (req, res) => {
         });
 
     } else {
-    User.create({
-        name: req.body.name,
-        email: req.body.email,
-        password: bcrypt.hashSync(req.body.password, 12)
-    });
-    res.redirect('/');
-}
+        User.create({
+            name: req.body.name,
+            email: req.body.email,
+            password: bcrypt.hashSync(req.body.password, 12)
+        });
+        res.redirect('/');
+    }
 });
 router.get('/login', async (req, res) => {
     res.render('auth/login.njk')
@@ -47,10 +47,11 @@ router.post('/login', async (req, res) => {
             email: req.body.email
         }
     });
+
     if (!user || !bcrypt.compareSync(req.body.password, user.password)) {
         req.session.errors = ['Invalid credentials!'];
         req.session.save((err) => {
-        res.redirect('/login');
+            res.redirect('/login');
         });
     } else {
         req.session.user = user;
